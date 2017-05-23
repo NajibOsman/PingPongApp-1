@@ -6,6 +6,8 @@ var uglify = require('gulp-uglify')
 
 var browserSync = require('browser-sync').create();
 
+var jshint = require('jshint')
+
 // var lib = require('bower-files')();
 
 //find bootstrap files
@@ -65,4 +67,32 @@ gulp.task('serve', function() {
       index: "index.html"
     }
   });
+});
+
+//This says to watch all of the files inside of our development js folder and whenever one of the files changes
+
+gulp.task('jsBuild', ['jsBrowserify', 'jshint'], function(){
+  browserSync.reload();
+});
+
+//Let's add a watcher for our Bower dependencies next. This line will also go at the bottom of our serve task.
+
+gulp.task('serve', function() {
+  browserSync.init({
+    server: {
+      baseDir: "./",
+      index: "index.html"
+    }
+  });
+
+  gulp.watch(['js/*.js'], ['jsBuild']);
+  gulp.watch(['bower.json'], ['bowerBuild']);
+
+});
+
+//Now, we are watching the Bower manifest file for changes so that whenever we install or uninstall a frontend dependency our vendor files will be rebuilt and the browser reloaded with the bowerBuild task.
+
+
+gulp.task('bowerBuild', ['bower'], function(){
+  browserSync.reload();
 });
